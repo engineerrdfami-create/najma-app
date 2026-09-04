@@ -50,3 +50,4 @@ jobs:
         with:
           name: najma-app-apk
           path: android-build/*.apk
+          
