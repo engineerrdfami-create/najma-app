@@ -22,20 +22,27 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Accept Android SDK Licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Install PWABuilder CLI
-        run: npm install -g @pwabuilder/cli
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
 
-      - name: Generate Android Project and Build
+      - name: Setup Bubblewrap Configuration
         run: |
-          pwa2apk -u https://engineerrdfani-create.github.io/najma-app/ -o ./android-project || pwabuilder https://engineerrdfani-create.github.io/najma-app/ --platform android
-          cd android-project || cd android || true
-          chmod +x gradlew || true
-          ./gradlew assembleDebug || gradle assembleDebug
+          mkdir -p ~/.bubblewrap
+          echo '{"jdkPath":"'"$JAVA_HOME"'","androidSdkPath":"'"$ANDROID_HOME"'"}' > ~/.bubblewrap/config.json
+
+      - name: Build APK
+        run: |
+          npx @bubblewrap/cli init --manifest=./manifest.json --directory=android-build --skipRequirementsCheck
+          cd android-build
+          npx @bubblewrap/cli build
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
