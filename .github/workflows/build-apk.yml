@@ -40,9 +40,10 @@ jobs:
 
       - name: Build APK
         run: |
-          npx @bubblewrap/cli init --manifest=./manifest.json --directory=android-build --skipRequirementsCheck
+          mkdir -p android-build
+          yes | npx @bubblewrap/cli init --manifest=./manifest.json --directory=android-build --skipRequirementsCheck || true
           cd android-build
-          npx @bubblewrap/cli build
+          yes | npx @bubblewrap/cli build
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
