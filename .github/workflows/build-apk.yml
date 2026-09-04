@@ -35,8 +35,8 @@ jobs:
           mkdir -p ~/.bubblewrap
           echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
           
-          # إمداد الأداة بالرابط المباشر الصحيح للمانيفست
-          npx @bubblewrap/cli init --manifest=https://engineerrdfani-create.github.io/najma-app/manifest.json --skipKeygen
+          # استخدام المسار الكامل للملف المحلي لمنع تفسيره كـ URL
+          npx @bubblewrap/cli init --manifest="$(pwd)/manifest.json" --skipKeygen
           npx @bubblewrap/cli build
 
       - name: Upload APK Artifact
