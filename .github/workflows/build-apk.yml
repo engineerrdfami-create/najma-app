@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: PWABuilder Action
-        uses: pwa-builder/pwabuilder-action@v1.0.8
+        uses: pwa-builder/pwa-action@v1.0.1
         with:
           pwa-url: "https://engineerrdfani-create.github.io/najma-app/"
           output-type: "apk"
