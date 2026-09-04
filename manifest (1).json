@@ -1,0 +1,13 @@
+{
+  "background_color": "#000000",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "نجمه",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "نجمه",
+  "start_url": "/",
+  "theme_color": "#121212",
+  "id": "/",
+  "description": "تطبيق نجمه"
+}
