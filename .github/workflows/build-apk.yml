@@ -29,12 +29,13 @@ jobs:
 
       - name: Initialize and Build APK
         run: |
-          yes | bubblewrap init --manifest ./manifest.json --directory ./android-build --skipKeygen
-          cd android-build
-          yes | bubblewrap build
+          mkdir -p ~/.bubblewrap
+          echo '{"jdkPath":"'$JAVA_HOME'","androidSdkPath":""}' > ~/.bubblewrap/config.json
+          npx @bubblewrap/cli init --manifest=./manifest.json
+          npx @bubblewrap/cli build
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: android-build/*.apk
+          path: "*.apk"
