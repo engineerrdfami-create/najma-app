@@ -13,14 +13,31 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Build Android APK via PWABuilder
-        uses: pwabuilder/pwabuilder-action@v1.0.0
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
         with:
-          pwa-url: "https://engineerrdfani-create.github.io/najma-app/"
-          output-type: "apk"
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
+
+      - name: Build APK with Bubblewrap
+        run: |
+          yes | bubblewrap init --manifest="https://engineerrdfani-create.github.io/najma-app/manifest.json" --directory="pwa-app" || true
+          cd pwa-app || exit 1
+          yes | bubblewrap build
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: najma-app-apk
-          path: ./*.apk
+          path: ./**/*.apk
