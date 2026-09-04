@@ -2,52 +2,33 @@ name: Build Android APK
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Accept Android SDK Licenses
-        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      - name: Setup Bubblewrap Configuration
-        run: |
-          mkdir -p ~/.bubblewrap
-          echo '{"jdkPath":"'"$JAVA_HOME"'","androidSdkPath":"'"$ANDROID_HOME"'"}' > ~/.bubblewrap/config.json
-
       - name: Initialize and Build APK
         run: |
-          mkdir -p android-build
-          echo "y" | npx @bubblewrap/cli init --manifest="https://engineerrdfani-create.github.io/najma-app/manifest.json" --directory="android-build" --skipRequirementsCheck
+          bubblewrap init --manifest ./manifest.json --directory ./android-build
           cd android-build
-          echo "y" | npx @bubblewrap/cli build --skipSigning
+          bubblewrap build
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: najma-app-apk
+          name: app-release-apk
           path: android-build/*.apk
-          
