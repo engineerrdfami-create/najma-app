@@ -1,0 +1,20 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: PWABuilder Action
+        uses: pwa-builder/pwabuilder-action@v1.0.8
+        with:
+          pwa-url: "https://engineerrdfani-create.github.io/najma-app/"
+          output-type: "apk"
