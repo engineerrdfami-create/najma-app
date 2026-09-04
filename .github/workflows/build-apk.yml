@@ -30,12 +30,21 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      - name: Configure and Build APK
+      - name: Fix Manifest and Build APK
         run: |
+          # 1. ضبط إعدادات Bubblewrap لتفادي الأسئلة التفاعلية
           mkdir -p ~/.bubblewrap
           echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
-          
-          # استخدام المسار الكامل للملف المحلي لمنع تفسيره كـ URL
+
+          # 2. ضمان وجود رابط URL صحيح داخل manifest.json
+          node -e "
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+            manifest.start_url = 'https://engineerrdfani-create.github.io/najma-app/';
+            fs.writeFileSync('manifest.json', JSON.stringify(manifest, null, 2));
+          "
+
+          # 3. البناء
           npx @bubblewrap/cli init --manifest="$(pwd)/manifest.json" --skipKeygen
           npx @bubblewrap/cli build
 
