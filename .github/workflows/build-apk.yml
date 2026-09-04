@@ -27,14 +27,15 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
+      - name: Install PWABuilder CLI
+        run: npm install -g @pwabuilder/cli
 
-      - name: Build APK with Bubblewrap
+      - name: Generate Android Project and Build
         run: |
-          yes | bubblewrap init --manifest="https://engineerrdfani-create.github.io/najma-app/manifest.json" --directory="pwa-app" || true
-          cd pwa-app || exit 1
-          yes | bubblewrap build
+          pwa2apk -u https://engineerrdfani-create.github.io/najma-app/ -o ./android-project || pwabuilder https://engineerrdfani-create.github.io/najma-app/ --platform android
+          cd android-project || cd android || true
+          chmod +x gradlew || true
+          ./gradlew assembleDebug || gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
