@@ -30,37 +30,20 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      - name: Generate Clean Manifest and Build APK
+      - name: Configure and Build APK
         run: |
-          # 1. إعداد مسارات JDK و Android SDK تلقائياً
+          # 1. إعداد مسارات JDK و SDK مسبقاً
           mkdir -p ~/.bubblewrap
           echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
 
-          # 2. إنشاء manifest.json سليم ومضمون الصياغة 100%
-          cat << 'EOF' > valid_manifest.json
-          {
-            "name": "Najma App",
-            "short_name": "Najma",
-            "start_url": "https://engineerrdfani-create.github.io/najma-app/",
-            "display": "standalone",
-            "background_color": "#000000",
-            "theme_color": "#000000",
-            "icons": [
-              {
-                "src": "https://via.placeholder.com/512.png",
-                "sizes": "512x512",
-                "type": "image/png"
-              }
-            ]
-          }
-          EOF
+          # 2. تهيئة المشروع من رابط شبكة خارجي وإدخال الإجابات التفاعلية تلقائياً
+          printf "\n\n\n\n\n\n" | npx @bubblewrap/cli init --manifest=https://engineerrdfani-create.github.io/najma-app/manifest.json
 
-          # 3. بناء التطبيق مباشرة دون المطالبة بمفاتيح توقيع تفاعلية
-          npx @bubblewrap/cli init --manifest=valid_manifest.json --skipKeygen
+          # 3. بناء ملف الـ APK
           npx @bubblewrap/cli build
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: "*.apk"
+          path: "**/*.apk"
