@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - مظهر التطبيق</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: radial-gradient(circle at center, #111B38 0%, #070C1E 100%);
+            color: #FFFFFF; font-family: Arial, sans-serif; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .container { width: 100%; max-width: 400px; padding: 20px; display: flex; flex-direction: column; gap: 20px; flex-grow: 1; }
+        .header { display: flex; align-items: center; justify-content: space-between; }
+        .back-btn {
+            background: rgba(28, 37, 65, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;
+        }
+        .title { font-size: 18px; font-weight: bold; color: #FFD700; }
+        .theme-option {
+            background: rgba(28, 37, 65, 0.5); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s;
+        }
+        .theme-option.active { border-color: #FFD700; background: rgba(255, 215, 0, 0.1); }
+        .theme-name { font-size: 15px; font-weight: bold; color: #FFF; }
+        .theme-desc { font-size: 12px; color: #8C92A4; margin-top: 3px; }
+        .check-mark { color: #FFD700; font-size: 18px; display: none; }
+        .theme-option.active .check-mark { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="settings.html" class="back-btn">➔</a>
+            <div class="title">مظهر التطبيق 🌙</div>
+            <div style="width: 36px;"></div>
+        </div>
+
+        <div class="theme-option active" id="opt-dark-gold" onclick="selectTheme('dark-gold')">
+            <div>
+                <div class="theme-name">الوضع الداكن الفاخر (افتراضي)</div>
+                <div class="theme-desc">تصميم أزرق داكن مع لمسات ذهبية متألقة</div>
+            </div>
+            <div class="check-mark">✔</div>
+        </div>
+
+        <div class="theme-option" id="opt-midnight-blue" onclick="selectTheme('midnight-blue')">
+            <div>
+                <div class="theme-name">أزرق المنتصف العميق</div>
+                <div class="theme-desc">درجات داكنة مريحة للعينين في الإضاءة المنخفضة</div>
+            </div>
+            <div class="check-mark">✔</div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            let current = localStorage.getItem('najma_theme') || 'dark-gold';
+            document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('active'));
+            document.getElementById('opt-' + current).classList.add('active');
+        };
+
+        function selectTheme(themeName) {
+            localStorage.setItem('najma_theme', themeName);
+            document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('active'));
+            document.getElementById('opt-' + themeName).classList.add('active');
+            alert('تم تطبيق وحفظ المظهر بنجاح ✨');
+        }
+    </script>
+</body>
+</html>

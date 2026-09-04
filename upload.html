@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - رفع فيديو جديد</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: radial-gradient(circle at center, #111B38 0%, #070C1E 100%);
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .upload-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            padding-bottom: 80px;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        .back-btn {
+            color: #3A86EF;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        /* صندوق اختيار الفيديو */
+        .file-drop-area {
+            width: 100%;
+            height: 180px;
+            background: rgba(28, 37, 65, 0.5);
+            border: 2px dashed rgba(58, 134, 239, 0.5);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .file-drop-area:active {
+            background: rgba(28, 37, 65, 0.8);
+            border-color: #FFD700;
+        }
+        .file-input-hidden {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .upload-text {
+            font-size: 14px;
+            color: #8C92A4;
+            text-align: center;
+            padding: 0 15px;
+        }
+        /* حقل الوصف */
+        .input-group {
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        .textarea-field {
+            width: 100%;
+            height: 100px;
+            background-color: #0B132B;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            color: #FFFFFF;
+            font-size: 14px;
+            outline: none;
+            resize: none;
+            transition: border-color 0.2s;
+        }
+        .textarea-field:focus {
+            border-color: #3A86EF;
+            box-shadow: 0 0 10px rgba(58, 134, 239, 0.3);
+        }
+        .textarea-field::placeholder {
+            color: #8C92A4;
+        }
+        /* زر النشر */
+        .publish-btn {
+            width: 100%;
+            height: 48px;
+            background-color: #3A86EF;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(58, 134, 239, 0.4);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .publish-btn:active {
+            transform: scale(0.98);
+        }
+        /* شريط التنقل السفلي */
+        .bottom-nav {
+            height: 60px;
+            background: rgba(11, 19, 43, 0.85);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 20;
+        }
+        .nav-item {
+            color: #8C92A4;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .nav-item.active {
+            color: #3A86EF;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="upload-container">
+        <div class="header">
+            <a href="feed.html" class="back-btn">← عودة</a>
+            <div class="title">رفع فيديو جديد</div>
+            <div style="width: 40px;"></div>
+        </div>
+
+        <!-- منطقة اختيار الفيديو من الجهاز -->
+        <div class="file-drop-area" id="dropArea">
+            <input type="file" id="videoFile" class="file-input-hidden" accept="video/*" onchange="handleFileSelect(event)">
+            <div class="upload-icon">📹</div>
+            <div class="upload-text" id="fileStatusText">اضغط لاختيار مقطع فيديو من جهازك</div>
+        </div>
+
+        <div class="input-group">
+            <textarea class="textarea-field" id="captionInput" placeholder="اكتب وصفاً جذاباً للفيديو الخاص بك... ✨"></textarea>
+        </div>
+
+        <button class="publish-btn" onclick="publishVideo()">نشر الفيديو 🚀</button>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="feed.html" class="nav-item">الرئيسية</a>
+        <a href="explore.html" class="nav-item">اكتشف</a>
+        <a href="upload.html" class="nav-item active">➕ إنشاء</a>
+        <a href="notifications.html" class="nav-item">الإشعارات</a>
+        <a href="profile.html" class="nav-item">الملف الشخصي</a>
+    </div>
+
+    <script>
+        let selectedVideoBase64 = '';
+
+        // معالجة واختيار ملف الفيديو من الهاتف
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            const statusText = document.getElementById('fileStatusText');
+
+            if (!file) return;
+
+            if (!file.type.startsWith('video/')) {
+                alert('الرجاء اختيار ملف فيديو صالح (MP4 أو ما شابه) ⚠️');
+                return;
+            }
+
+            statusText.innerText = 'جاري معالجة الفيديو: ' + file.name + ' ⏳';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedVideoBase64 = e.target.result;
+                statusText.innerText = 'تم اختيار الفيديو بنجاح! ✅ (' + file.name + ')';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // دالة حفظ ونشر الفيديو
+        function publishVideo() {
+            const caption = document.getElementById('captionInput').value.trim();
+
+            if (!selectedVideoBase64) {
+                alert('الرجاء اختيار مقطع فيديو أولاً من جهازك! ⚠️');
+                return;
+            }
+
+            // جلب الفيديوهات القديمة أو إنشاء مصفوفة جديدة
+            let videos = JSON.parse(localStorage.getItem('najma_videos')) || [];
+
+            // إضافة الفيديو الجديد في قمة القائمة
+            const newVideo = {
+                url: selectedVideoBase64,
+                caption: caption || 'بدون وصف ✨',
+                likes: 0
+            };
+
+            videos.unshift(newVideo);
+            localStorage.setItem('najma_videos', JSON.stringify(videos));
+
+            alert('تم نشر الفيديو بنجاح على منصة نجمه! 🎉');
+            window.location.href = 'feed.html';
+        }
+    </script>
+</body>
+</html>

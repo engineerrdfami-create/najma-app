@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - تعديل الحساب</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: radial-gradient(circle at center, #111B38 0%, #070C1E 100%);
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 30px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .back-btn {
+            background: rgba(28, 37, 65, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .title {
+            font-size: 17px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-label {
+            font-size: 13px;
+            color: #B2B8C6;
+        }
+        .form-input, .form-textarea {
+            width: 100%;
+            background: rgba(28, 37, 65, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 15px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-textarea:focus {
+            border-color: #FFD700;
+        }
+        .form-textarea {
+            resize: none;
+            height: 90px;
+        }
+        .action-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+        .action-btn.save {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #070C1E;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            margin-top: 10px;
+        }
+        .action-btn.logout {
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            color: #ff6b6b;
+            margin-top: 5px;
+        }
+        .action-btn:active {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- الشريط العلوي -->
+        <div class="header">
+            <a href="settings.html" class="back-btn" title="عودة">➔</a>
+            <div class="title">إعدادات الحساب 👤</div>
+            <div style="width: 36px;"></div>
+        </div>
+
+        <!-- حقل اسم المستخدم -->
+        <div class="form-group">
+            <label class="form-label">اسم المستخدم (Username)</label>
+            <input type="text" id="usernameInput" class="form-input" placeholder="أدخل اسم المستخدم...">
+        </div>
+
+        <!-- حقل السيرة الذاتية -->
+        <div class="form-group">
+            <label class="form-label">السيرة الذاتية (Bio)</label>
+            <textarea id="bioInput" class="form-textarea" placeholder="اكتب نبذة مختصرة عنك..."></textarea>
+        </div>
+
+        <!-- زر حفظ التغييرات -->
+        <button class="action-btn save" onclick="saveAccountData()">💾 حفظ التغييرات</button>
+
+        <!-- زر تسجيل الخروج -->
+        <button class="action-btn logout" onclick="logoutAccount()">🚪 تسجيل الخروج</button>
+    </div>
+
+    <script>
+        // تحميل البيانات المحفوظة عند فتح الصفحة
+        window.onload = function() {
+            let savedUsername = localStorage.getItem('najma_username');
+            let savedBio = localStorage.getItem('najma_bio');
+
+            if (savedUsername) {
+                document.getElementById('usernameInput').value = savedUsername;
+            }
+            if (savedBio) {
+                document.getElementById('bioInput').value = savedBio;
+            }
+        };
+
+        // دالة حفظ التغييرات في الذاكرة لتظهر في الملف الشخصي
+        function saveAccountData() {
+            let newUsername = document.getElementById('usernameInput').value.trim();
+            let newBio = document.getElementById('bioInput').value.trim();
+
+            if (!newUsername) {
+                alert('الرجاء إدخال اسم المستخدم بشكل صحيح!');
+                return;
+            }
+
+            localStorage.setItem('najma_username', newUsername);
+            localStorage.setItem('najma_bio', newBio);
+
+            alert('تم حفظ التعديلات بنجاح! ✅');
+            location.href = 'profile.html'; // العودة لصفحة الملف الشخصي لرؤية التغييرات
+        }
+
+        // دالة تسجيل الخروج
+        function logoutAccount() {
+            if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج؟')) {
+                localStorage.removeItem('najma_username');
+                localStorage.removeItem('najma_bio');
+                alert('تم تسجيل الخروج بنجاح!');
+                location.href = 'profile.html';
+            }
+        }
+    </script>
+</body>
+</html>

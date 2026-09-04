@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - المحفظة الرقمية</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: radial-gradient(circle at center, #111B38 0%, #070C1E 100%);
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .wallet-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 30px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .back-btn {
+            background: rgba(28, 37, 65, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        /* بطاقة الرصيد الإجمالي */
+        .total-balance-card {
+            background: linear-gradient(135deg, rgba(58, 134, 239, 0.2), rgba(255, 215, 0, 0.15));
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+        .balance-label {
+            font-size: 13px;
+            color: #B2B8C6;
+            margin-bottom: 8px;
+        }
+        .balance-amount {
+            font-size: 28px;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin-bottom: 15px;
+        }
+        .wallet-actions-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .wallet-action-btn {
+            background: #3A86EF;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .wallet-action-btn.deposit {
+            background: #FFD700;
+            color: #070C1E;
+        }
+        .wallet-action-btn:active {
+            transform: scale(0.95);
+        }
+        /* قائمة العملات */
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-top: 5px;
+        }
+        .currencies-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .currency-item {
+            background: rgba(28, 37, 65, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .currency-item:hover {
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+        .currency-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .currency-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .currency-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+        .currency-code {
+            font-size: 11px;
+            color: #8C92A4;
+        }
+        .currency-balance {
+            text-align: left;
+        }
+        .currency-amount {
+            font-size: 15px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+        .currency-fiat-eq {
+            font-size: 11px;
+            color: #3A86EF;
+        }
+
+        /* نافذة الإيداع والسحب المنبثقة (Modal) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-box {
+            background: #111B38;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 340px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center;
+        }
+        .modal-input {
+            width: 100%;
+            height: 42px;
+            background: rgba(7, 12, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0 12px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        .modal-select {
+            width: 100%;
+            height: 42px;
+            background: rgba(7, 12, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0 12px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .modal-btn {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+        }
+        .modal-btn.confirm {
+            background: #FFD700;
+            color: #070C1E;
+        }
+        .modal-btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wallet-container">
+        <!-- الشريط العلوي -->
+        <div class="header">
+            <a href="profile.html" class="back-btn" title="عودة">➔</a>
+            <div class="title">محفظة نجمه الرقمية 💎</div>
+            <div style="width: 36px;"></div>
+        </div>
+
+        <!-- بطاقة الإجمالي -->
+        <div class="total-balance-card">
+            <div class="balance-label">إجمالي الأصول المقدرة</div>
+            <div class="balance-amount" id="totalBalance">$4,850.00 USD</div>
+            <div class="wallet-actions-row">
+                <button class="wallet-action-btn deposit" onclick="openModal('deposit')">إيداع ➕</button>
+                <button class="wallet-action-btn" onclick="openModal('withdraw')">سحب ↗</button>
+            </div>
+        </div>
+
+        <!-- العملات النقدية -->
+        <div class="section-title">العملات النقدية (Fiat)</div>
+        <div class="currencies-list">
+            <div class="currency-item" onclick="location.href='currency-detail.html?code=USD'">
+                <div class="currency-info">
+                    <div class="currency-icon">🇺🇸</div>
+                    <div>
+                        <div class="currency-name">الدولار الأمريكي</div>
+                        <div class="currency-code">USD</div>
+                    </div>
+                </div>
+                <div class="currency-balance">
+                    <div class="currency-amount" id="bal-USD">$1,250.00</div>
+                    <div class="currency-fiat-eq">أساسي</div>
+                </div>
+            </div>
+
+            <div class="currency-item" onclick="location.href='currency-detail.html?code=SAR'">
+                <div class="currency-info">
+                    <div class="currency-icon">🇸🇦</div>
+                    <div>
+                        <div class="currency-name">الريال السعودي</div>
+                        <div class="currency-code">SAR</div>
+                    </div>
+                </div>
+                <div class="currency-balance">
+                    <div class="currency-amount" id="bal-SAR">SR 4,687.50</div>
+                    <div class="currency-fiat-eq">متصل بالدولار</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- العملات الرقمية -->
+        <div class="section-title">العملات الرقمية (Crypto)</div>
+        <div class="currencies-list">
+            <div class="currency-item" onclick="location.href='currency-detail.html?code=BTC'">
+                <div class="currency-info">
+                    <div class="currency-icon" style="color: #F7931A;">₿</div>
+                    <div>
+                        <div class="currency-name">البيتكوين</div>
+                        <div class="currency-code">Bitcoin (BTC)</div>
+                    </div>
+                </div>
+                <div class="currency-balance">
+                    <div class="currency-amount" id="bal-BTC">0.035 BTC</div>
+                    <div class="currency-fiat-eq">≈ $2,100.00</div>
+                </div>
+            </div>
+
+            <div class="currency-item" onclick="location.href='currency-detail.html?code=BNB'">
+                <div class="currency-info">
+                    <div class="currency-icon" style="color: #F3BA2F;">🟡</div>
+                    <div>
+                        <div class="currency-name">باينانس كوين</div>
+                        <div class="currency-code">Binance (BNB)</div>
+                    </div>
+                </div>
+                <div class="currency-balance">
+                    <div class="currency-amount" id="bal-BNB">1.85 BNB</div>
+                    <div class="currency-fiat-eq">≈ $650.00</div>
+                </div>
+            </div>
+
+            <div class="currency-item" onclick="location.href='currency-detail.html?code=USDT'">
+                <div class="currency-info">
+                    <div class="currency-icon" style="color: #26A17B;">₮</div>
+                    <div>
+                        <div class="currency-name">تيثر (مستقرة)</div>
+                        <div class="currency-code">USDT / Binance Pay</div>
+                    </div>
+                </div>
+                <div class="currency-balance">
+                    <div class="currency-amount" id="bal-USDT">150.00 USDT</div>
+                    <div class="currency-fiat-eq">≈ $150.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الإيداع والسحب المنبثقة -->
+    <div class="modal-overlay" id="walletModal">
+        <div class="modal-box">
+            <div class="modal-title" id="modalTitle">عملية مالية</div>
+            <select class="modal-select" id="modalCurrency">
+                <option value="USD">الدولار الأمريكي (USD)</option>
+                <option value="SAR">الريال السعودي (SAR)</option>
+                <option value="BTC">البيتكوين (BTC)</option>
+                <option value="BNB">باينانس كوين (BNB)</option>
+                <option value="USDT">تيثر (USDT)</option>
+            </select>
+            <input type="number" class="modal-input" id="modalAmount" placeholder="أدخل المبلغ...">
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeModal()">إلغاء</button>
+                <button class="modal-btn confirm" id="modalConfirmBtn" onclick="processTransaction()">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAction = 'deposit';
+
+        function openModal(action) {
+            currentAction = action;
+            document.getElementById('modalTitle').innerText = action === 'deposit' ? '➕ إيداع رصيد جديد' : '↗ سحب رصيد مالي';
+            document.getElementById('modalConfirmBtn').innerText = action === 'deposit' ? 'إيداع' : 'سحب';
+            document.getElementById('modalAmount').value = '';
+            document.getElementById('walletModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('walletModal').style.display = 'none';
+        }
+
+        function processTransaction() {
+            const amount = parseFloat(document.getElementById('modalAmount').value);
+            const currency = document.getElementById('modalCurrency').value;
+
+            if (!amount || amount <= 0) {
+                alert('الرجاء إدخال مبلغ صحيح!');
+                return;
+            }
+
+            let balances = JSON.parse(localStorage.getItem('najma_balances')) || {
+                USD: 1250.00,
+                SAR: 4687.50,
+                BTC: 0.035,
+                BNB: 1.85,
+                USDT: 150.00
+            };
+
+            if (currentAction === 'deposit') {
+                balances[currency] += amount;
+                alert(`تم إيداع ${amount} ${currency} بنجاح! 💳`);
+            } else {
+                if (balances[currency] < amount) {
+                    alert('عذراً، رصيدك غير كافي لإتمام عملية السحب! ❌');
+                    return;
+                }
+                balances[currency] -= amount;
+                alert(`تم سحب ${amount} ${currency} بنجاح! 🏧`);
+            }
+
+            localStorage.setItem('najma_balances', JSON.stringify(balances));
+            updateBalancesUI();
+            closeModal();
+        }
+
+        function updateBalancesUI() {
+            let balances = JSON.parse(localStorage.getItem('najma_balances'));
+            if (!balances) return;
+
+            document.getElementById('bal-USD').innerText = `$${balances.USD.toFixed(2)}`;
+            document.getElementById('bal-SAR').innerText = `SR ${balances.SAR.toFixed(2)}`;
+            document.getElementById('bal-BTC').innerText = `${balances.BTC.toFixed(3)} BTC`;
+            document.getElementById('bal-BNB').innerText = `${balances.BNB.toFixed(2)} BNB`;
+            document.getElementById('bal-USDT').innerText = `${balances.USDT.toFixed(2)} USDT`;
+
+            let totalUSD = balances.USD + (balances.SAR / 3.75) + (balances.BTC * 60000) + (balances.BNB * 350) + balances.USDT;
+            document.getElementById('totalBalance').innerText = `$${totalUSD.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem('najma_balances')) {
+                updateBalancesUI();
+            }
+        };
+    </script>
+</body>
+</html>

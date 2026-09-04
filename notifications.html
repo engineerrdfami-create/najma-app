@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - الإشعارات</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: radial-gradient(circle at center, #111B38 0%, #070C1E 100%);
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .notifications-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px 20px 80px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        /* قائمة الإشعارات */
+        .notification-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .notification-item {
+            background: rgba(28, 37, 65, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .notification-icon {
+            font-size: 24px;
+        }
+        .notification-content {
+            flex-grow: 1;
+        }
+        .notification-text {
+            font-size: 13px;
+            color: #E2E8F0;
+            line-height: 1.4;
+        }
+        .notification-time {
+            font-size: 11px;
+            color: #8C92A4;
+            margin-top: 4px;
+        }
+        /* شريط التنقل السفلي */
+        .bottom-nav {
+            height: 60px;
+            background: rgba(11, 19, 43, 0.85);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 20;
+        }
+        .nav-item {
+            color: #8C92A4;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .nav-item.active {
+            color: #3A86EF;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="notifications-container">
+        <div class="header">
+            <div class="title">الإشعارات 🔔</div>
+            <div style="width: 40px;"></div>
+        </div>
+
+        <div class="notification-list" id="notificationList">
+            <!-- سيتم تعبئتها ديناميكياً -->
+        </div>
+    </div>
+
+    <!-- شريط التنقل السفلي -->
+    <div class="bottom-nav">
+        <a href="feed.html" class="nav-item">الرئيسية</a>
+        <a href="explore.html" class="nav-item">اكتشف</a>
+        <a href="upload.html" class="nav-item">➕ إنشاء</a>
+        <a href="notifications.html" class="nav-item active">الإشعارات</a>
+        <a href="profile.html" class="nav-item">الملف الشخصي</a>
+    </div>
+
+    <script>
+        window.onload = function() {
+            loadNotifications();
+        };
+
+        function loadNotifications() {
+            const listContainer = document.getElementById('notificationList');
+            
+            // قائمة الإشعارات التفاعلية للمستخدم
+            const notifications = [
+                { icon: '❤️', text: 'أعجب أحد المستخدمين بفيديوهاتك الجديدة على المنصة.', time: 'منذ 5 دقائق' },
+                { icon: '💬', text: 'تم إضافة تعليق جديد على مقطعك البرمجي.', time: 'منذ ساعة' },
+                { icon: '⭐', text: 'أهلاً بك في تطبيق نجمه! استمتع بنشر إبداعاتك.', time: 'منذ يوم' }
+            ];
+
+            listContainer.innerHTML = '';
+
+            notifications.forEach(notif => {
+                const item = document.createElement('div');
+                item.className = 'notification-item';
+                item.innerHTML = `
+                    <div class="notification-icon">${notif.icon}</div>
+                    <div class="notification-content">
+                        <div class="notification-text">${notif.text}</div>
+                        <div class="notification-time">${notif.time}</div>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>

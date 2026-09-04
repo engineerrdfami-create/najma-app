@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - إعدادات العملة</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: radial-gradient(circle at center, #111B38 0%, #070C1E 100%);
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 30px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .back-btn {
+            background: rgba(28, 37, 65, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .title {
+            font-size: 17px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        /* بطاقة رصيد العملة المحدد */
+        .currency-card {
+            background: rgba(28, 37, 65, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .curr-big-icon {
+            font-size: 36px;
+            margin-bottom: 5px;
+        }
+        .curr-name-title {
+            font-size: 14px;
+            color: #B2B8C6;
+        }
+        .curr-balance-val {
+            font-size: 30px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+        /* أزرار الخدمات السريعة */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .service-btn {
+            background: rgba(28, 37, 65, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s;
+        }
+        .service-btn:hover {
+            border-color: #3A86EF;
+            background: rgba(58, 134, 239, 0.1);
+        }
+        .service-icon {
+            font-size: 18px;
+        }
+        .service-label {
+            font-size: 11px;
+            color: #E2E8F0;
+        }
+        /* قسم خيارات العملة وإعداداتها */
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-top: 5px;
+        }
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-item {
+            background: rgba(28, 37, 65, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .option-item:hover {
+            background: rgba(28, 37, 65, 0.8);
+        }
+        .option-name {
+            font-size: 13px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+        .option-desc {
+            font-size: 11px;
+            color: #8C92A4;
+            margin-top: 2px;
+        }
+        .option-arrow {
+            color: #8C92A4;
+            font-size: 14px;
+        }
+
+        /* النوافذ المنبثقة التفاعلية (Modals) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-box {
+            background: #111B38;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 340px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center;
+        }
+        .modal-input, .modal-select {
+            width: 100%;
+            height: 42px;
+            background: rgba(7, 12, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0 12px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .modal-btn {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+        }
+        .modal-btn.confirm {
+            background: #FFD700;
+            color: #070C1E;
+        }
+        .modal-btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .address-box {
+            background: rgba(7, 12, 30, 0.8);
+            border: 1px dashed rgba(255, 215, 0, 0.4);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #FFD700;
+            word-break: break-all;
+        }
+        .history-list {
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .history-item {
+            background: rgba(28, 37, 65, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- الشريط العلوي -->
+        <div class="header">
+            <a href="wallet.html" class="back-btn" title="عودة">➔</a>
+            <div class="title" id="pageTitle">إدارة العملة</div>
+            <div style="width: 36px;"></div>
+        </div>
+
+        <!-- بطاقة رصيد العملة المحدد -->
+        <div class="currency-card">
+            <div class="curr-big-icon" id="currIcon">💎</div>
+            <div class="curr-name-title" id="currFullName">العملة الرقمية</div>
+            <div class="curr-balance-val" id="currBalance">0.00</div>
+        </div>
+
+        <!-- خدمات سريعة (أزرار) -->
+        <div class="services-grid">
+            <div class="service-btn" onclick="openModal('send')">
+                <div class="service-icon">↗</div>
+                <div class="service-label">إرسال</div>
+            </div>
+            <div class="service-btn" onclick="openModal('receive')">
+                <div class="service-icon">↙</div>
+                <div class="service-label">استقبال</div>
+            </div>
+            <div class="service-btn" onclick="openModal('swap')">
+                <div class="service-icon">🔄</div>
+                <div class="service-label">تبديل</div>
+            </div>
+            <div class="service-btn" onclick="openModal('history')">
+                <div class="service-icon">📄</div>
+                <div class="service-label">السجل</div>
+            </div>
+        </div>
+
+        <!-- إعدادات وخيارات متقدمة -->
+        <div class="section-title">خيارات وإعدادات العملة</div>
+        <div class="options-list">
+            <div class="option-item" onclick="openOptionModal('network')">
+                <div>
+                    <div class="option-name">شبكة التحويل والرسوم</div>
+                    <div class="option-desc" id="netDesc">الشبكة القياسية (Standard Network)</div>
+                </div>
+                <div class="option-arrow">➔</div>
+            </div>
+            <div class="option-item" onclick="openOptionModal('security')">
+                <div>
+                    <div class="option-name">أمان الحساب والمصادقة</div>
+                    <div class="option-desc">حماية عمليات السحب برمز التحقق الثنائي (2FA)</div>
+                </div>
+                <div class="option-arrow">➔</div>
+            </div>
+            <div class="option-item" onclick="openOptionModal('alerts')">
+                <div>
+                    <div class="option-name">تنبيهات الأسعار والسوق</div>
+                    <div class="option-desc">تفعيل إشعارات التغير السريع للعملة</div>
+                </div>
+                <div class="option-arrow">➔</div>
+            </div>
+            <div class="option-item" onclick="openOptionModal('export')">
+                <div>
+                    <div class="option-name">تصدير كشف الحساب</div>
+                    <div class="option-desc">تحميل تقرير العمليات بصيغة PDF أو CSV</div>
+                </div>
+                <div class="option-arrow">➔</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- النافذة المنبثقة الشاملة -->
+    <div class="modal-overlay" id="dynamicModal">
+        <div class="modal-box" id="modalBoxContent"></div>
+    </div>
+
+    <script>
+        const currenciesData = {
+            USD: { name: 'الدولار الأمريكي (USD)', icon: '🇺🇸', prefix: '$' },
+            SAR: { name: 'الريال السعودي (SAR)', icon: '🇸🇦', prefix: 'SR ' },
+            BTC: { name: 'البيتكوين (Bitcoin - BTC)', icon: '₿', prefix: '', suffix: ' BTC' },
+            BNB: { name: 'باينانس كوين (Binance - BNB)', icon: '🟡', prefix: '', suffix: ' BNB' },
+            USDT: { name: 'تيثر المستقرة (USDT)', icon: '₮', prefix: '', suffix: ' USDT' }
+        };
+
+        let currentCode = 'USD';
+        let balances = {};
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentCode = urlParams.get('code') || 'USD';
+
+            const currInfo = currenciesData[currentCode] || currenciesData['USD'];
+            document.getElementById('pageTitle').innerText = currInfo.name;
+            document.getElementById('currIcon').innerText = currInfo.icon;
+            document.getElementById('currFullName').innerText = currInfo.name;
+
+            loadBalances();
+            
+            // استرجاع الشبكة المحفوظة مسبقاً إن وجدت
+            let savedNet = localStorage.getItem('najma_net_' + currentCode);
+            if(savedNet) {
+                document.getElementById('netDesc').innerText = `الشبكة المفعلة: ${savedNet}`;
+            }
+        };
+
+        function loadBalances() {
+            balances = JSON.parse(localStorage.getItem('najma_balances')) || {
+                USD: 1250.00,
+                SAR: 4687.50,
+                BTC: 0.035,
+                BNB: 1.85,
+                USDT: 150.00
+            };
+
+            let val = balances[currentCode] || 0;
+            let currInfo = currenciesData[currentCode];
+            let formattedVal = (currentCode === 'BTC') ? val.toFixed(3) : val.toFixed(2);
+            document.getElementById('currBalance').innerText = (currInfo.prefix || '') + formattedVal + (currInfo.suffix || '');
+        }
+
+        function closeModal() {
+            document.getElementById('dynamicModal').style.display = 'none';
+        }
+
+        function openModal(type) {
+            const modalBox = document.getElementById('modalBoxContent');
+            document.getElementById('dynamicModal').style.display = 'flex';
+
+            if (type === 'send') {
+                modalBox.innerHTML = `
+                    <div class="modal-title">إرسال ${currentCode} ↗</div>
+                    <input type="text" class="modal-input" id="sendAddress" placeholder="عنوان المستلم (محفظة / ID)...">
+                    <input type="number" class="modal-input" id="sendAmount" placeholder="المبلغ المراد إرساله...">
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel" onclick="closeModal()">إلغاء</button>
+                        <button class="modal-btn confirm" onclick="executeSend()">إرسال الآن</button>
+                    </div>
+                `;
+            } else if (type === 'receive') {
+                modalBox.innerHTML = `
+                    <div class="modal-title">استقبال ${currentCode} ↙</div>
+                    <div style="font-size:12px; color:#B2B8C6; text-align:center;">عنوان محفظتك الخاص في تطبيق نجمه:</div>
+                    <div class="address-box">0xNajmaWallet99887761234${currentCode}Secure</div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel" onclick="closeModal()">إغلاق</button>
+                        <button class="modal-btn confirm" onclick="alert('تم نسخ العنوان بنجاح! 📋'); closeModal();">نسخ العنوان</button>
+                    </div>
+                `;
+            } else if (type === 'swap') {
+                modalBox.innerHTML = `
+                    <div class="modal-title">تبديل وتحويل العملة 🔄</div>
+                    <div style="font-size:12px; color:#B2B8C6;">تحويل رصيد من ${currentCode} إلى USD</div>
+                    <input type="number" class="modal-input" id="swapAmount" placeholder="كمية التحويل...">
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel" onclick="closeModal()">إلغاء</button>
+                        <button class="modal-btn confirm" onclick="executeSwap()">تأكيد التبديل</button>
+                    </div>
+                `;
+            } else if (type === 'history') {
+                modalBox.innerHTML = `
+                    <div class="modal-title">سجل معاملات ${currentCode} 📄</div>
+                    <div class="history-list">
+                        <div class="history-item"><span>إيداع ناجح للأصول</span> <span style="color:#00F5D4;">مكتمل</span></div>
+                        <div class="history-item"><span>تحديث شبكة الأمان</span> <span style="color:#00F5D4;">نشط</span></div>
+                    </div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn confirm" onclick="closeModal()">إغلاق</button>
+                    </div>
+                `;
+            }
+        }
+
+        // تفعيل خيارات وإعدادات العملة بنافذة تفاعلية حقيقية
+        function openOptionModal(opt) {
+            const modalBox = document.getElementById('modalBoxContent');
+            document.getElementById('dynamicModal').style.display = 'flex';
+
+            if (opt === 'network') {
+                modalBox.innerHTML = `
+                    <div class="modal-title">اختيار شبكة التحويل 🌐</div>
+                    <select class="modal-select" id="networkSelect">
+                        <option value="Standard Network">الشبكة القياسية (Standard)</option>
+                        <option value="BEP-20 (Binance)">شبكة باينانس (BEP-20)</option>
+                        <option value="TRC-20 (Tron)">شبكة ترون (TRC-20)</option>
+                        <option value="ERC-20 (Ethereum)">شبكة إيثيريوم (ERC-20)</option>
+                    </select>
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel" onclick="closeModal()">إلغاء</button>
+                        <button class="modal-btn confirm" onclick="saveNetwork()">حفظ الشبكة</button>
+                    </div>
+                `;
+            } else if (opt === 'security') {
+                modalBox.innerHTML = `
+                    <div class="modal-title">أمان الحساب والمصادقة 🔒</div>
+                    <div style="font-size:13px; color:#B2B8C6; text-align:center;">حماية إضافية مطلوبة لتأكيد عمليات السحب والإرسال لهذه العملة.</div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel" onclick="closeModal()">إلغاء</button>
+                        <button class="modal-btn confirm" onclick="alert('تم تفعيل حماية 2FA بنجاح! ✅'); closeModal();">تفعيل الحماية</button>
+                    </div>
+                `;
+            } else if (opt === 'alerts') {
+                modalBox.innerHTML = `
+                    <div class="modal-title">تنبيهات الأسعار 🔔</div>
+                    <input type="number" class="modal-input" id="alertPrice" placeholder="أدخل السعر المستهدف للتنبيه...">
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel" onclick="closeModal()">إلغاء</button>
+                        <button class="modal-btn confirm" onclick="alert('تم ضبط تنبيه السعر بنجاح! 📈'); closeModal();">حفظ التنبيه</button>
+                    </div>
+                `;
+            } else if (opt === 'export') {
+                modalBox.innerHTML = `
+                    <div class="modal-title">تصدير كشف الحساب 📥</div>
+                    <div style="font-size:13px; color:#B2B8C6; text-align:center;">اختر تنسيق الملف لتحميل تقرير المعاملات الخاص بـ ${currentCode}:</div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel" onclick="alert('تم تحميل التقرير PDF بنجاح!'); closeModal();">PDF</button>
+                        <button class="modal-btn confirm" onclick="alert('تم تحميل التقرير CSV بنجاح!'); closeModal();">CSV</button>
+                    </div>
+                `;
+            }
+        }
+
+        function saveNetwork() {
+            let selectedNet = document.getElementById('networkSelect').value;
+            localStorage.setItem('najma_net_' + currentCode, selectedNet);
+            document.getElementById('netDesc').innerText = `الشبكة المفعلة: ${selectedNet}`;
+            alert(`تم تغيير الشبكة إلى: ${selectedNet} بنجاح! 🌐`);
+            closeModal();
+        }
+
+        function executeSend() {
+            let amount = parseFloat(document.getElementById('sendAmount').value);
+            let address = document.getElementById('sendAddress').value;
+
+            if (!address || !amount || amount <= 0) {
+                alert('الرجاء التأكد من إدخال العنوان والمبلغ بشكل صحيح!');
+                return;
+            }
+
+            if (balances[currentCode] < amount) {
+                alert('عذراً، رصيدك غير كافي لإتمام عملية الإرسال! ❌');
+                return;
+            }
+
+            balances[currentCode] -= amount;
+            localStorage.setItem('najma_balances', JSON.stringify(balances));
+            loadBalances();
+            alert(`تم إرسال ${amount} ${currentCode} بنجاح! ✅`);
+            closeModal();
+        }
+
+        function executeSwap() {
+            let amount = parseFloat(document.getElementById('swapAmount').value);
+            if (!amount || amount <= 0) {
+                alert('الرجاء إدخال مبلغ صحيح للتبديل!');
+                return;
+            }
+            if (balances[currentCode] < amount) {
+                alert('رصيدك غير كافي لعملية التبديل! ❌');
+                return;
+            }
+
+            balances[currentCode] -= amount;
+            balances['USD'] = (balances['USD'] || 0) + (amount * (currentCode === 'BTC' ? 60000 : 1));
+            localStorage.setItem('najma_balances', JSON.stringify(balances));
+            loadBalances();
+            alert('تم تبديل العملة بنجاح! 🔄');
+            closeModal();
+        }
+    </script>
+</body>
+</html>

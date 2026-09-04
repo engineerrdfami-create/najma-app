@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - الاستكشاف</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: radial-gradient(circle at center, #111B38 0%, #070C1E 100%);
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .explore-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px 20px 80px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        /* صندوق البحث */
+        .search-box {
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            height: 42px;
+            background-color: #0B132B;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0 40px 0 15px;
+            color: #FFFFFF;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: #3A86EF;
+        }
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #8C92A4;
+        }
+        /* الوسوم الرائجة (Trending Tags) */
+        .tags-container {
+            width: 100%;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            padding-bottom: 5px;
+        }
+        .tags-container::-webkit-scrollbar {
+            display: none;
+        }
+        .tag-chip {
+            background: rgba(28, 37, 65, 0.6);
+            border: 1px solid rgba(58, 134, 239, 0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #FFD700;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        /* شبكة الفيديوهات للاستكشاف */
+        .explore-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        .explore-card {
+            background: rgba(28, 37, 65, 0.5);
+            aspect-ratio: 9/16;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            font-size: 11px;
+            color: #E2E8F0;
+            text-align: center;
+            overflow: hidden;
+            border: 1px solid rgba(58, 134, 239, 0.2);
+            cursor: pointer;
+        }
+        .empty-explore {
+            grid-column: span 3;
+            text-align: center;
+            color: #8C92A4;
+            font-size: 13px;
+            padding: 40px 0;
+        }
+        /* شريط التنقل السفلي */
+        .bottom-nav {
+            height: 60px;
+            background: rgba(11, 19, 43, 0.85);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 20;
+        }
+        .nav-item {
+            color: #8C92A4;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .nav-item.active {
+            color: #3A86EF;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="explore-container">
+        <div class="header">
+            <div class="title">اكتشف الترند 🔍</div>
+            <div style="width: 40px;"></div>
+        </div>
+
+        <!-- صندوق البحث -->
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن فيديوهات أو صناع محتوى..." oninput="filterVideos()">
+        </div>
+
+        <!-- الوسوم الشائعة -->
+        <div class="tags-container">
+            <div class="tag-chip">🔥 الترند</div>
+            <div class="tag-chip">⭐ نجح</div>
+            <div class="tag-chip">💡 برمجة</div>
+            <div class="tag-chip">🎨 تصاميم</div>
+            <div class="tag-chip">🚀 إبداع</div>
+        </div>
+
+        <!-- شبكة الفيديوهات -->
+        <div class="explore-grid" id="exploreGrid">
+            <!-- سيتم تعبئتها ديناميكياً -->
+        </div>
+    </div>
+
+    <!-- شريط التنقل السفلي -->
+    <div class="bottom-nav">
+        <a href="feed.html" class="nav-item">الرئيسية</a>
+        <a href="explore.html" class="nav-item active">اكتشف</a>
+        <a href="upload.html" class="nav-item">➕ إنشاء</a>
+        <a href="notifications.html" class="nav-item">الإشعارات</a>
+        <a href="profile.html" class="nav-item">الملف الشخصي</a>
+    </div>
+
+    <script>
+        // تحميل الفيديوهات عند فتح الصفحة
+        window.onload = function() {
+            loadExploreVideos();
+        };
+
+        // عرض جميع الفيديوهات في شبكة الاستكشاف
+        function loadExploreVideos(filterText = '') {
+            let videos = JSON.parse(localStorage.getItem('najma_videos')) || [];
+            const grid = document.getElementById('exploreGrid');
+            grid.innerHTML = '';
+
+            // تصفية الفيديوهات بناءً على النص المدزول في البحث
+            let filteredVideos = videos.filter(vid => 
+                (vid.caption && vid.caption.toLowerCase().includes(filterText.toLowerCase()))
+            );
+
+            if (filteredVideos.length === 0) {
+                grid.innerHTML = '<div class="empty-explore">لا توجد نتائج مطابقة للبحث 📭</div>';
+                return;
+            }
+
+            filteredVideos.forEach((vid) => {
+                const card = document.createElement('div');
+                card.className = 'explore-card';
+                card.innerHTML = `
+                    <div style="font-size: 16px; margin-bottom: 4px; color: #FFD700;">▶</div>
+                    <div style="font-size: 10px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">${vid.caption || 'فيديو'}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // دالة تصفية الفيديوهات أثناء الكتابة في شريط البحث
+        function filterVideos() {
+            const query = document.getElementById('searchInput').value;
+            loadExploreVideos(query);
+        }
+    </script>
+</body>
+</html>

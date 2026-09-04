@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - الأمان والخصوصية</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: radial-gradient(circle at center, #111B38 0%, #070C1E 100%);
+            color: #FFFFFF; font-family: Arial, sans-serif; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .container { width: 100%; max-width: 400px; padding: 20px; display: flex; flex-direction: column; gap: 20px; flex-grow: 1; }
+        .header { display: flex; align-items: center; justify-content: space-between; }
+        .back-btn {
+            background: rgba(28, 37, 65, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;
+        }
+        .title { font-size: 18px; font-weight: bold; color: #FFD700; }
+        .sec-card {
+            background: rgba(28, 37, 65, 0.5); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .sec-title { font-size: 14px; font-weight: bold; color: #FFF; margin-bottom: 3px; }
+        .sec-desc { font-size: 11px; color: #8C92A4; }
+        .action-btn {
+            background: #3A86EF; color: white; border: none; padding: 6px 14px;
+            border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold;
+        }
+        .action-btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="settings.html" class="back-btn">➔</a>
+            <div class="title">الأمان والخصوصية 🛡️</div>
+            <div style="width: 36px;"></div>
+        </div>
+
+        <div class="sec-card">
+            <div>
+                <div class="sec-title">تغيير كلمة المرور</div>
+                <div class="sec-desc">تحديث كلمة مرور الحساب الدورية</div>
+            </div>
+            <button class="action-btn" onclick="alert('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك المسجل ✉️')">تغيير</button>
+        </div>
+
+        <div class="sec-card">
+            <div>
+                <div class="sec-title">التحقق الثنائي (2FA)</div>
+                <div class="sec-desc">حماية إضافية لتسجيل الدخول والمعاملات</div>
+            </div>
+            <button class="action-btn" style="background: #26A17B;" onclick="alert('التحقق الثنائي مفعل بنجاح على حسابك 🔐')">مفعل</button>
+        </div>
+
+        <div class="sec-card">
+            <div>
+                <div class="sec-title">سجل الأنشطة والجلسات</div>
+                <div class="sec-desc">إدارة الأجهزة المتصلة بحسابك حالياً</div>
+            </div>
+            <button class="action-btn" style="background: #64748B;" onclick="alert('أنت متصل من جهازك الحالي فقط عبر جلسة آمنة 💻')">عرض</button>
+        </div>
+    </div>
+</body>
+</html>

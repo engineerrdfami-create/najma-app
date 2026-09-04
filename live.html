@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - غرفة البث المباشر</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #000;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+        .live-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        /* كاميرا البث المباشر الفعلي */
+        .camera-preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            background: #111;
+        }
+        /* الشريط العلوي للبث */
+        .live-header {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        .live-info-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .live-badge {
+            background: rgba(255, 51, 102, 0.9);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 8px rgba(255, 51, 102, 0.4);
+        }
+        .viewers-count {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #FFD700;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .end-live-btn {
+            background: rgba(255, 51, 102, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .end-live-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* الأزرار الجانبية للتحكم بالبث (كاميرا، ميكروفون، هدايا) */
+        .live-side-controls {
+            position: absolute;
+            top: 80px;
+            left: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 10;
+        }
+        .control-btn {
+            background: rgba(28, 37, 65, 0.65);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .control-btn:active {
+            transform: scale(0.9);
+        }
+        .control-btn.active-muted {
+            background: rgba(255, 51, 102, 0.7);
+            border-color: #FF3366;
+        }
+
+        /* منطقة القلوب المتحركة والدردشة */
+        .floating-hearts-container {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            width: 60px;
+            height: 250px;
+            pointer-events: none;
+            z-index: 15;
+            overflow: hidden;
+        }
+        .floating-heart {
+            position: absolute;
+            bottom: 0;
+            font-size: 24px;
+            animation: floatUp 2.5s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-220px) scale(1.3); opacity: 0; }
+        }
+
+        .live-interaction-area {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 220px;
+        }
+        .live-chat-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 160px;
+            padding-right: 5px;
+        }
+        .chat-msg {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            line-height: 1.4;
+            width: fit-content;
+            max-width: 90%;
+        }
+        .chat-msg span {
+            color: #FFD700;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+        .chat-msg.gift {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.4);
+            color: #FFD700;
+        }
+        .live-input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .live-input {
+            flex-grow: 1;
+            height: 42px;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 21px;
+            padding: 0 16px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+        }
+        .live-input:focus {
+            border-color: #3A86EF;
+        }
+        .action-icon-btn {
+            background: rgba(28, 37, 65, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .action-icon-btn:active {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="live-container">
+        <!-- تشغيل كاميرا الهاتف -->
+        <video id="liveCamera" class="camera-preview" autoplay playsinline muted></video>
+
+        <!-- الشريط العلوي للبث المباشر -->
+        <div class="live-header">
+            <div class="live-info-group">
+                <div class="live-badge">🔴 مباشر</div>
+                <div class="viewers-count" id="viewersCount">👁️ 420 مشاهد</div>
+            </div>
+            <button class="end-live-btn" onclick="endLive()">إنهاء البث</button>
+        </div>
+
+        <!-- الأزرار الجانبية الفعالة (تبديل الكاميرا، كتم الصوتي، إرسال هدية) -->
+        <div class="live-side-controls">
+            <button class="control-btn" onclick="switchCamera()" title="تبديل الكاميرا">🔄</button>
+            <button class="control-btn" id="micBtn" onclick="toggleMic()" title="كتم الميكروفون">🎤</button>
+            <button class="control-btn" onclick="sendGift()" title="إرسال هدية نجمة">🎁</button>
+            <button class="control-btn" onclick="sendLikeHeart()" title="إعجاب">❤️</button>
+        </div>
+
+        <!-- حاوية القلوب المتطايرة -->
+        <div class="floating-hearts-container" id="heartsContainer"></div>
+
+        <!-- صندوق التعليقات والتفاعل -->
+        <div class="live-interaction-area">
+            <div class="live-chat-box" id="liveChatBox">
+                <div class="chat-msg"><span>@sylan_user:</span> منور البث يا فنان 🔥</div>
+                <div class="chat-msg"><span>@najma_admin:</span> بدأ البث بنجاح، استمروا في التفاعل ✨</div>
+            </div>
+            <div class="live-input-row">
+                <input type="text" class="live-input" id="liveInputMsg" placeholder="شارك برأيك أو أرسل تعليقاً..." onkeypress="handleKeyPress(event)">
+                <button class="action-icon-btn" onclick="sendLiveMsg()" title="إرسال">💬</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStream = null;
+        let useFrontCamera = true;
+        let isMicMuted = false;
+        let viewers = 420;
+
+        // تشغيل الكاميرا عند فتح الصفحة
+        window.onload = function() {
+            startCamera('user');
+            
+            // تحديث عشوائي لعداد المشاهدين ليعطي حيوية للبث
+            setInterval(() => {
+                viewers += Math.floor(Math.random() * 5) - 2;
+                if (viewers < 100) viewers = 100;
+                document.getElementById('viewersCount').innerText = `👁️ ${viewers} مشاهد`;
+            }, 4000);
+        };
+
+        function startCamera(facingMode) {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            
+            const constraints = {
+                video: { facingMode: facingMode },
+                audio: true
+            };
+
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia(constraints)
+                    .then(stream => {
+                        currentStream = stream;
+                        const videoElement = document.getElementById('liveCamera');
+                        videoElement.srcObject = stream;
+                        // تطبيق حالة الميكروفون الحالية
+                        stream.getAudioTracks().forEach(track => {
+                            track.enabled = !isMicMuted;
+                        });
+                    })
+                    .catch(err => {
+                        console.log("تعذر الوصول إلى الكاميرا: ", err);
+                    });
+            }
+        }
+
+        // دالة تبديل الكاميرا (أمامية وخلفية)
+        function switchCamera() {
+            useFrontCamera = !useFrontCamera;
+            startCamera(useFrontCamera ? 'user' : 'environment');
+        }
+
+        // دالة كتم أو تشغيل الميكروفون
+        function toggleMic() {
+            isMicMuted = !isMicMuted;
+            const micBtn = document.getElementById('micBtn');
+            
+            if (currentStream) {
+                currentStream.getAudioTracks().forEach(track => {
+                    track.enabled = !isMicMuted;
+                });
+            }
+
+            if (isMicMuted) {
+                micBtn.classList.add('active-muted');
+                micBtn.innerHTML = '🔇';
+            } else {
+                micBtn.classList.remove('active-muted');
+                micBtn.innerHTML = '🎤';
+            }
+        }
+
+        // دالة إرسال هدية افتراضية
+        function sendGift() {
+            const chatBox = document.getElementById('liveChatBox');
+            const currentUsername = localStorage.getItem('najma_username') || 'مستخدم_نجمه';
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-msg gift';
+            msgDiv.innerHTML = `<span>@${currentUsername}:</span> أرسل هدية مميزة 🌟 نجمة ذهبية لامعة! 🎁`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // إرسال قلوب متطايرة عند الهدية
+            sendLikeHeart();
+        }
+
+        // دالة إرسال الإعجاب والقلوب المتحركة
+        function sendLikeHeart() {
+            const container = document.getElementById('heartsContainer');
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.innerHTML = ['❤️', '✨', '🌟', '💖'][Math.floor(Math.random() * 4)];
+            heart.style.right = Math.random() * 20 + 'px';
+            container.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 2500);
+        }
+
+        // إرسال تعليق نصي
+        function sendLiveMsg() {
+            const input = document.getElementById('liveInputMsg');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatBox = document.getElementById('liveChatBox');
+            const currentUsername = localStorage.getItem('najma_username') || 'مستخدم_نجمه';
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-msg';
+            msgDiv.innerHTML = `<span>@${currentUsername}:</span> ${text}`;
+            chatBox.appendChild(msgDiv);
+
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendLiveMsg();
+            }
+        }
+
+        // إنهاء البث والعودة للفييد الرئيسي
+        function endLive() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            window.location.href = 'feed.html';
+        }
+    </script>
+</body>
+</html>

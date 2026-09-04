@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نجمه - إعدادات التطبيق</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: radial-gradient(circle at center, #111B38 0%, #070C1E 100%);
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .settings-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 30px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .back-btn {
+            background: rgba(28, 37, 65, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .title { font-size: 18px; font-weight: bold; color: #FFD700; }
+        .section-header { font-size: 14px; font-weight: bold; color: #FFD700; margin-top: 10px; margin-bottom: -5px; }
+        .setting-card {
+            background: rgba(28, 37, 65, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .setting-card:hover { border-color: rgba(255, 215, 0, 0.4); background: rgba(40, 53, 89, 0.6); }
+        .setting-info { display: flex; align-items: center; gap: 12px; }
+        .setting-icon { font-size: 22px; }
+        .setting-title { font-size: 14px; font-weight: bold; color: #FFFFFF; margin-bottom: 3px; }
+        .setting-desc { font-size: 11px; color: #8C92A4; }
+        .setting-arrow { color: #8C92A4; font-size: 16px; }
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #F87171;
+            border-radius: 14px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.25); }
+    </style>
+</head>
+<body>
+
+    <div class="settings-container">
+        <div class="header">
+            <a href="profile.html" class="back-btn" title="عودة">➔</a>
+            <div class="title">إعدادات التطبيق ⚙️</div>
+            <div style="width: 36px;"></div>
+        </div>
+
+        <div class="section-header">إدارة الحساب</div>
+        <a href="account-settings.html" class="setting-card">
+            <div class="setting-info">
+                <div class="setting-icon">👤</div>
+                <div>
+                    <div class="setting-title">تعديل الحساب والملف الشخصي</div>
+                    <div class="setting-desc">تغيير اسم المستخدم، السيرة الذاتية، والصورة</div>
+                </div>
+            </div>
+            <div class="setting-arrow">➔</div>
+        </a>
+
+        <div class="section-header">التفضيلات والمظهر</div>
+        <a href="theme-settings.html" class="setting-card">
+            <div class="setting-info">
+                <div class="setting-icon">🌙</div>
+                <div>
+                    <div class="setting-title">مظهر التطبيق (الثيم)</div>
+                    <div class="setting-desc" id="currentThemeDesc">الوضع الداكن الفاخر مع لمسات ذهبية</div>
+                </div>
+            </div>
+            <div class="setting-arrow">➔</div>
+        </a>
+
+        <a href="language-settings.html" class="setting-card">
+            <div class="setting-info">
+                <div class="setting-icon">🌐</div>
+                <div>
+                    <div class="setting-title">لغة التطبيق</div>
+                    <div class="setting-desc" id="currentLangDesc">اللغة العربية</div>
+                </div>
+            </div>
+            <div class="setting-arrow">➔</div>
+        </a>
+
+        <div class="section-header">الإشعارات والأمان</div>
+        <a href="notifications.html" class="setting-card">
+            <div class="setting-info">
+                <div class="setting-icon">🔔</div>
+                <div>
+                    <div class="setting-title">إشعارات التنبيهات</div>
+                    <div class="setting-desc">إدارة تنبيهات المعاملات والرسائل</div>
+                </div>
+            </div>
+            <div class="setting-arrow">➔</div>
+        </a>
+
+        <a href="security-settings.html" class="setting-card">
+            <div class="setting-info">
+                <div class="setting-icon">🛡️</div>
+                <div>
+                    <div class="setting-title">الأمان والخصوصية</div>
+                    <div class="setting-desc">حماية البيانات والتحقق الثنائي</div>
+                </div>
+            </div>
+            <div class="setting-arrow">➔</div>
+        </a>
+
+        <div class="logout-btn" onclick="logoutAccount()">
+            <span>🚪</span>
+            <span>تسجيل الخروج من الحساب</span>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // استرجاع الخيارات المحفوظة وعرضها في الوصف
+            const savedTheme = localStorage.getItem('najma_theme');
+            if(savedTheme === 'midnight-blue') {
+                document.getElementById('currentThemeDesc').innerText = 'أزرق المنتصف العميق';
+            }
+
+            const savedLang = localStorage.getItem('najma_lang');
+            if(savedLang === 'en') {
+                document.getElementById('currentLangDesc').innerText = 'English';
+            }
+        };
+
+        function logoutAccount() {
+            if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج من التطبيق؟')) {
+                localStorage.removeItem('najma_username');
+                localStorage.removeItem('najma_bio');
+                alert('تم تسجيل الخروج بنجاح 👋');
+                window.location.href = 'auth.html';
+            }
+        }
+    </script>
+</body>
+</html>
