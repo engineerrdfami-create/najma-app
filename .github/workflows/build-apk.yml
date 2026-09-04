@@ -38,10 +38,10 @@ jobs:
           mkdir -p ~/.bubblewrap
           echo '{"jdkPath":"'"$JAVA_HOME"'","androidSdkPath":"'"$ANDROID_HOME"'"}' > ~/.bubblewrap/config.json
 
-      - name: Initialize and Build APK
+      - name: Generate TWA Manifest and Build
         run: |
-          yes | bubblewrap init --manifest="https://engineerrdfani-create.github.io/najma-app/manifest.json"
-          yes | bubblewrap build
+          npx @bubblewrap/cli init --directory=. --manifest=./manifest.json --skipRequirementsCheck
+          npx @bubblewrap/cli build
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
