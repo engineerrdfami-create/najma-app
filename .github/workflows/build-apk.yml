@@ -24,14 +24,17 @@ jobs:
         with:
           node-version: 20
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      - name: Initialize and Build APK
+      - name: Configure and Build APK
         run: |
           mkdir -p ~/.bubblewrap
-          echo '{"jdkPath":"'$JAVA_HOME'","androidSdkPath":""}' > ~/.bubblewrap/config.json
-          npx @bubblewrap/cli init --manifest=./manifest.json
+          echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
+          npx @bubblewrap/cli init --manifest=./manifest.json --skipKeygen
           npx @bubblewrap/cli build
 
       - name: Upload APK Artifact
