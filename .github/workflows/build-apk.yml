@@ -40,8 +40,8 @@ jobs:
 
       - name: Initialize and Build APK
         run: |
-          bubblewrap init --manifest=manifest.json --skipRequirementsCheck
-          bubblewrap build
+          yes | bubblewrap init --manifest="https://engineerrdfani-create.github.io/najma-app/manifest.json"
+          yes | bubblewrap build
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
