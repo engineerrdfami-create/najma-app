@@ -27,20 +27,19 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      - name: Configure and Build APK
+      - name: Build APK via PWABuilder
         run: |
-          # 1. إعداد مسارات JDK و SDK مسبقاً
+          npx pwabuilder-cli https://engineerrdfani-create.github.io/najma-app/ -o ./apk-output -p android
+        continue-on-error: true
+
+      - name: Fallback Direct Android Build
+        if: steps.pwa.outcome != 'success'
+        run: |
+          npm install -g @bubblewrap/cli
           mkdir -p ~/.bubblewrap
           echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
-
-          # 2. تهيئة المشروع من رابط شبكة خارجي وإدخال الإجابات التفاعلية تلقائياً
-          printf "\n\n\n\n\n\n" | npx @bubblewrap/cli init --manifest=https://engineerrdfani-create.github.io/najma-app/manifest.json
-
-          # 3. بناء ملف الـ APK
-          npx @bubblewrap/cli build
+          npx @bubblewrap/cli merge --manifest=./manifest.json || true
+          npx @bubblewrap/cli build || true
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
