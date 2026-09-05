@@ -19,28 +19,38 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Android SDK
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build Webview Android App
+      - name: Build APK using Capacitor
         run: |
-          npm install -g pwa-to-apk
-          pwa-to-apk --url https://engineerrdfani-create.github.io/najma-app/ --out output.apk || true
-
-      - name: Alternative Cordova Build
-        run: |
-          if [ ! -f "output.apk" ]; then
-            npm install -g cordova
-            cordova create myApp com.najma.app Najma
-            cd myApp
-            cordova platform add android
-            echo '<script>window.location.href="https://engineerrdfani-create.github.io/najma-app/";</script>' > www/index.html
-            cordova build android --release
-            cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ../output.apk
-          fi
+          mkdir build_app && cd build_app
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          
+          # 1. تهيئة مشروع Capacitor
+          npx cap init "Najma App" "com.najma.app" --web-dir www
+          mkdir www
+          
+          # 2. توجيه التطبيق لرابط الموقع مباشرة
+          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=https://engineerrdfani-create.github.io/najma-app/"></head><body></body></html>' > www/index.html
+          
+          # 3. إعداد أندرويد وبنائه
+          npx cap add android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+          
+          # 4. نقل ملف الـ APK إلى المجلد الرئيسي
+          cp app/build/outputs/apk/debug/app-debug.apk ../../najma-app.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
-          path: "output.apk"
+          name: najma-app-apk
+          path: "najma-app.apk"
