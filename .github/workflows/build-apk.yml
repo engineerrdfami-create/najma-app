@@ -22,25 +22,25 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '22'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Build APK using Capacitor
         run: |
-          mkdir build_app && cd build_app
+          mkdir -p build_app && cd build_app
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
           
           # 1. تهيئة مشروع Capacitor
           npx cap init "Najma App" "com.najma.app" --web-dir www
-          mkdir www
+          mkdir -p www
           
-          # 2. توجيه التطبيق لرابط الموقع مباشرة
+          # 2. إنشاء صفحة إعادة التوجيه للموقع
           echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=https://engineerrdfani-create.github.io/najma-app/"></head><body></body></html>' > www/index.html
           
-          # 3. إعداد أندرويد وبنائه
+          # 3. إضافة منصة أندرويد وبناء حزمة الـ APK
           npx cap add android
           cd android
           chmod +x gradlew
