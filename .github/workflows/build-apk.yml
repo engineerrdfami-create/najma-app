@@ -27,26 +27,27 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build APK using Capacitor
+      - name: Build APK with Native Files
         run: |
+          # 1. تثبيت Capacitor
           mkdir -p build_app && cd build_app
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
           
-          # 1. تهيئة مشروع Capacitor
+          # 2. تهيئة المشروع
           npx cap init "Najma App" "com.najma.app" --web-dir www
           mkdir -p www
           
-          # 2. إنشاء صفحة إعادة التوجيه للموقع
-          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=https://engineerrdfani-create.github.io/najma-app/"></head><body></body></html>' > www/index.html
+          # 3. نسخ ملفات مشروعك الحقيقية بالكامل إلى مجلد البناء
+          cp -r ../* www/ 2>/dev/null || true
           
-          # 3. إضافة منصة أندرويد وبناء حزمة الـ APK
+          # 4. إضافة منصة أندرويد وبناء الـ APK
           npx cap add android
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
           
-          # 4. نقل ملف الـ APK إلى المجلد الرئيسي
+          # 5. استخراج ملف APK النهائي
           cp app/build/outputs/apk/debug/app-debug.apk ../../najma-app.apk
 
       - name: Upload APK Artifact
